@@ -4,6 +4,25 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report
 from sklearn.metrics import confusion_matrix
+import copy
+
+def initialLevel(n_labels):
+    first = 0
+    second = (n_labels - 1) - n_labels%2
+    level = []
+
+    while(first < second):
+        level.append(first)
+        level.append(second)
+        first+=1
+        second-=1
+
+    if n_labels%2 > 0:
+        level.append(n_labels-1)
+
+    return level
+
+
 
 data_path = 'C:/Users/ionaa/OneDrive/Documentos/unb/quinto_semestre/iia/seminiario/data/Dry_Bean_Dataset.xlsx'
 beans_data = pd.read_excel(data_path)
@@ -42,37 +61,62 @@ for i in range(len(class_array)):
         model = LogisticRegression(max_iter=300,random_state=16)
         model.fit(np.array(x_train_class),np.array(y_train_class))
         models[i][j] = model
-        models[j][i] = model
-
+        models[j][i] = -1
 
 
 
 for i,row in enumerate(X_test_array):
-    indexes = list(range(len(class_array)))
+    levelLabels = initialLevel(len(class_array))
 
-    while len(indexes) != 1:
-        start = 0
-        end = (len(indexes) - 1) - len(indexes)%2
-        to_be_popped = []
+    while len(levelLabels) != 1:
+        next_level = []
 
-        while start < end:
-            first = min(indexes[start],indexes[end])
-            second = max(indexes[start],indexes[end])
+        for idx in range(0,len(levelLabels)-1 - (len(levelLabels)%2),2):
+            first = min(levelLabels[idx],levelLabels[idx+1])
+            second = max(levelLabels[idx],levelLabels[idx+1])
 
             predicao = models[first][second].predict([row])
-            if predicao == 1:
-                to_be_popped.append(second)
+            if predicao[0] == 1:
+                next_level.append(first)
             else:
-                to_be_popped.append(first)
+                next_level.append(second)
 
-            start += 1
-            end -= 1
+        if len(levelLabels)%2 > 0:
+            next_level.append(levelLabels[len(levelLabels)-1])
 
-        for idx in to_be_popped:
-            indexes.remove(idx)
+
+
+        levelLabels = copy.deepcopy(next_level)
     
 
-    y_pred[i] = class_array[indexes[0]]
+    y_pred[i] = class_array[levelLabels[0]]
+
+# for i,row in enumerate(X_test_array):
+#     indexes = list(range(len(class_array)))
+
+#     while len(indexes) != 1:
+#         start = 0
+#         end = (len(indexes) - 1) - len(indexes)%2
+#         to_be_popped = []
+
+#         while start < end:
+#             first = min(indexes[start],indexes[end])
+#             second = max(indexes[start],indexes[end])
+
+#             predicao = models[first][second].predict([row])
+#             if predicao[0] == 1:
+#                 to_be_popped.append(second)
+#             else:
+#                 to_be_popped.append(first)
+
+#             start += 1
+#             end -= 1
+
+#         for idx in to_be_popped:
+#             indexes.remove(idx)
+    
+
+#     y_pred[i] = class_array[indexes[0]]
 
 
 

@@ -7,10 +7,10 @@ from sklearn.metrics import accuracy_score, classification_report
 from sklearn.linear_model import LogisticRegression
 
 # Carregue seus dados
-dataset_path = r"C:\Users\cauak\Downloads\Data.xlsx"
+dataset_path = 'data/Dry_Bean_Dataset.xlsx'
 dataset = pd.read_excel(dataset_path)
 
-X_custom = dataset.drop('Class', axis=1)
+X_custom = dataset.drop(['Class','Bean ID'], axis=1)
 y_custom = dataset['Class']
 
 # Divida os dados em treino e teste

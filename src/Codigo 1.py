@@ -94,15 +94,21 @@ for model_name, model in models.items():
 
 # Cria uma tabela comparativa detalhada das acurácias na validação cruzada
 comparison_df = pd.DataFrame(cv_results)
+
+# Ordena o DataFrame pela coluna 'Acurácia Média' em ordem decrescente
+comparison_df = comparison_df.sort_values(by='Acurácia Média', ascending=False)
+
 # Plota um gráfico de barras vertical
 plt.figure(figsize=(10, 6))
-sns.barplot(x='Modelo', y='Acurácia Média', data=comparison_df, palette='viridis')
-plt.errorbar(
-    x=comparison_df['Modelo'],
-    y=comparison_df['Acurácia Média'],
-    yerr=comparison_df['Desvio Padrão Acurácia'],
-    fmt='none', capsize=0.1, color='black'
-)
+bar_plot = sns.barplot(x='Modelo', y='Acurácia Média', hue='Modelo', data=comparison_df, palette='viridis', dodge=False, legend=False)
+
+# Adiciona os valores de acurácia acima das barras
+for index, value in enumerate(comparison_df['Acurácia Média']):
+    bar_plot.text(index, value, f'{value:.3f}', ha='center', va='bottom', fontsize=8)
+
+# Configurações adicionais para melhor visualização
+plt.ylim(0, 1.0)  # Define o limite y de 0 a 1.0
+plt.axhline(y=1.0, color='red', linestyle='--', linewidth=0.8)
 plt.xticks(rotation=45)  # Rotaciona os rótulos para melhor legibilidade
 plt.xlabel('Modelo')
 plt.ylabel('Acurácia Média na Validação Cruzada')
@@ -114,4 +120,3 @@ plt.savefig('comparacao_acuracias_modificado.png')
 
 # Exibe o gráfico
 plt.show()
-

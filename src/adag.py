@@ -205,7 +205,7 @@ plt.show()
 
 
 
-# print(classification_report(y_test, y_pred))
+print(classification_report(y_test, y_pred))
 # print('Confusion matrix:')
 # print(confusion_matrix(y_test, y_pred))
 
